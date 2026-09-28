@@ -5,14 +5,26 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Load dataset
+
+# ==========================================
+# 1. LOAD DATASET
+# ==========================================
+
 df = pd.read_csv("data/dataset.csv")
 
-# Separate features and target
+
+# ==========================================
+# 2. SEPARATE FEATURES AND TARGET
+# ==========================================
+
 X = df.drop("Result", axis=1)
 y = df["Result"]
 
-# Split dataset into training and testing data
+
+# ==========================================
+# 3. SPLIT DATA INTO TRAINING AND TESTING
+# ==========================================
+
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
@@ -21,35 +33,82 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=y
 )
 
-# Create Random Forest model
+
+# ==========================================
+# 4. CREATE RANDOM FOREST MODEL
+# ==========================================
+
 model = RandomForestClassifier(
     n_estimators=100,
     random_state=42
 )
 
-# Train the model
+
+# ==========================================
+# 5. TRAIN MODEL
+# ==========================================
+
 model.fit(X_train, y_train)
 
-# Make predictions
+
+# ==========================================
+# 6. WEBSITE PREDICTION FUNCTION
+# ==========================================
+
+def predict_website(features):
+    prediction = model.predict([features])[0]
+
+    if prediction == -1:
+        return "Phishing Website"
+    else:
+        return "Legitimate Website"
+
+
+# ==========================================
+# 7. TEST MODEL
+# ==========================================
+
 y_pred = model.predict(X_test)
 
-# Calculate accuracy
+
+# ==========================================
+# 8. CALCULATE ACCURACY
+# ==========================================
+
 accuracy = accuracy_score(y_test, y_pred)
+
 
 print("Phishing Website Detection Model")
 print("---------------------------------")
 print("Training samples:", len(X_train))
 print("Testing samples:", len(X_test))
 print("Accuracy:", round(accuracy * 100, 2), "%")
+
+
+# ==========================================
+# 9. CLASSIFICATION REPORT
+# ==========================================
+
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
 
-print("Confusion Matrix:")
-print(confusion_matrix(y_test, y_pred))
-# Create confusion matrix visualization
+
+# ==========================================
+# 10. CONFUSION MATRIX
+# ==========================================
+
 cm = confusion_matrix(y_test, y_pred)
 
+print("Confusion Matrix:")
+print(cm)
+
+
+# ==========================================
+# 11. CONFUSION MATRIX VISUALIZATION
+# ==========================================
+
 plt.figure(figsize=(6, 5))
+
 sns.heatmap(
     cm,
     annot=True,
@@ -62,5 +121,8 @@ plt.xlabel("Predicted")
 plt.ylabel("Actual")
 plt.title("Phishing Website Detection - Confusion Matrix")
 
+plt.tight_layout()
+
 plt.savefig("results/confusion_matrix.png")
+
 plt.show()
